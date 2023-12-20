@@ -18,10 +18,10 @@ from scipy.special import beta
 
 from dataset import get_dataloader, get_dataset
 #from EMA import WeightExponentialMovingAverage
-from model import DeePMOS_Beta
+from model import ProMOSNet
 
 
-parser = argparse.ArgumentParser(description='Training DeePMOS-Beta model.')
+parser = argparse.ArgumentParser(description='Training DeePMOS(beta) model.')
 parser.add_argument('--num_epochs', type=int, help='Number of epochs.', default=60)
 parser.add_argument('--log_valid', type=int, help='Logging valid score each log_valid epochs.', default=1)
 parser.add_argument('--log_epoch', type=int, help='Logging training during a global run.', default=1)
@@ -163,7 +163,8 @@ def train(num_epochs,
           valid_loader,
           test_loader):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = DeePMOS_Beta().to(device)
+    model = ProMOSNet().to(device)
+
 
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-5) #lr=1e-4, weight_decay=1e-5
     optimizer.zero_grad()
@@ -276,6 +277,7 @@ def main():
         args.num_epochs, args.log_valid, args.log_epoch, 
         dataset, train_set, valid_set, test_set, train_loader, valid_loader, test_loader)
 
-    torch.save(best_model, args.save_path+'best.pt')
+    model_scripted = torch.jit.script(best_model) # Export to TorchScript
+    model_scripted.save(args.save_path+'best.pt')
 
 main()
