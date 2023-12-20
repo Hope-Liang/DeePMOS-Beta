@@ -18,7 +18,7 @@ from scipy.special import beta
 
 from dataset import get_dataloader, get_dataset
 #from EMA import WeightExponentialMovingAverage
-from model import ProMOSNet
+from model import DeePMOS_Beta
 
 
 parser = argparse.ArgumentParser(description='Training DeePMOS(beta) model.')
@@ -163,7 +163,7 @@ def train(num_epochs,
           valid_loader,
           test_loader):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = ProMOSNet().to(device)
+    model = DeePMOS_Beta().to(device)
 
 
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-5) #lr=1e-4, weight_decay=1e-5
